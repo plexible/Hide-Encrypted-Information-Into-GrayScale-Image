@@ -2,6 +2,9 @@ from cv2 import imread, imwrite
 from cryptography.fernet import Fernet
 from math import ceil
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
+from cryptography.hazmat.backends import default_backend
+
+
 import base64
 
 #Encryption algorithm for vigenere cipher
@@ -77,7 +80,8 @@ def encrypt(message, key):
     block_size = 16
     key = key.ljust(32, b'\0')
     iv = key[:16]
-    cipher = Cipher(algorithms.AES(key), modes.CBC(iv))
+    backend = default_backend()
+    cipher = Cipher(algorithms.AES(key), modes.CBC(iv), backend=backend)
     encryptor = cipher.encryptor()
     cipher_text = encryptor.update(pad(message, block_size)) + encryptor.finalize()
     return cipher_text
@@ -86,7 +90,8 @@ def encrypt(message, key):
 def decrypt(cipher_text, key):
     key = key.ljust(32, b'\0')
     iv = key[:16]
-    cipher = Cipher(algorithms.AES(key), modes.CBC(iv))
+    backend = default_backend()
+    cipher = Cipher(algorithms.AES(key), modes.CBC(iv), backend=backend)
     decryptor = cipher.decryptor()
     decrypted_data = decryptor.update(cipher_text) + decryptor.finalize()
     return unpad(decrypted_data)
@@ -230,7 +235,7 @@ def extract_name_surname(binary_text):
     return decoded_text
 
 def extract_tcno(binary_text):
-    decoded_text = convert_binary_to_text(binary_text[0:800])
+    decoded_text = convert_binary_to_text(binary_text[0:192])
     return decoded_text
 
 #Saving decrypted information as a dictionary format.
