@@ -60,17 +60,19 @@ def find_vigenere_key(number_list):
             return "Invalid Char"
     return new_key
 
+#Padding for encryption algorithm
 def pad(data, block_size):
     if isinstance(data, str):
         data = data.encode('utf-8')
     padding_value = block_size - (len(data) % block_size)
     return data + bytes([padding_value] * padding_value)
 
-
+#Unpadding for decryption algorithm
 def unpad(data):
     padding_value = data[-1]
     return data[:-padding_value]
 
+#Encryption algorithm using AES in mode CBC
 def encrypt(message, key):
     block_size = 16
     key = key.ljust(32, b'\0')
@@ -80,6 +82,7 @@ def encrypt(message, key):
     cipher_text = encryptor.update(pad(message, block_size)) + encryptor.finalize()
     return cipher_text
 
+#Decryption algorithm according to encryption algorithm
 def decrypt(cipher_text, key):
     key = key.ljust(32, b'\0')
     iv = key[:16]
@@ -87,32 +90,37 @@ def decrypt(cipher_text, key):
     decryptor = cipher.decryptor()
     decrypted_data = decryptor.update(cipher_text) + decryptor.finalize()
     return unpad(decrypted_data)
-    
+
+#Generates key for encryption algorithm AES mode CBC
 def generate_key():
     fernet_key = Fernet.generate_key()
     aes_key_256_bits = fernet_key[:32]
     return aes_key_256_bits
 
+#Finds the key positions on image. 
+#Quarter is the 16. quarter on the image. (15. index)
 def key_position_on_img(quarter):
     key_positions = []
     index = 0
     while len(key_positions) < 4 and index < len(quarter):
-        current_value = quarter[index] % 5 + 10
+        current_value = quarter[index] % 5 + 10 #The value must be between 10,14 because those quarters are empty.
         if current_value not in key_positions:
             key_positions.append(current_value)
         index += 1
     return key_positions
 
+#Finds the information positions on img.
 def info_position_on_img(key):
     sum = 0
     for char in key:
         sum += ord(char)
-    value = sum
-    while not (len(set(str(value))) == len(str(value))):
+    value = sum 
+    while not (len(set(str(value))) == len(str(value))): #For the numbers to be different from each other.
         value += 1
     digits = [int(digit) for digit in str(value)]
     return digits[1:4]
 
+#LSB extraction from image
 def LSB_extraction(quarter):
     return ''.join(str(pixel & 1) for pixel in quarter)
 
@@ -126,6 +134,7 @@ def convert_binary_to_text(binary_text):
     text = ''.join(chr(int(binary_text[i:i+8], 2)) for i in range(0, len(binary_text), 8))
     return text
 
+#Divides the image into 16 parts
 def find_quarters(img, height, width):
     quarters = []
     rng = 4
@@ -135,6 +144,7 @@ def find_quarters(img, height, width):
             quarters.append(quarter)
     return quarters
 
+#It allows converting texts to binary and then keeping them as a list.
 def text_to_binary_list(img, encrypted_list):
     binary_list = []
     img_size = img.size
@@ -143,6 +153,7 @@ def text_to_binary_list(img, encrypted_list):
         binary_list.append(binary_text)
     return binary_list
 
+#Divides the key by the specified number of parts
 def divide_key_to_parts(encryption_key):
     parts_number = 4
     part_length = ceil(len(encryption_key) / parts_number)
@@ -151,6 +162,7 @@ def divide_key_to_parts(encryption_key):
     divided_parts = [part + "=" for part in parts]
     return divided_parts
 
+#Using LSB technique to embed informations on image and generates the new image.
 def embedding_part(quarters, binary_list, img, positions):
     height, width, _ = img.shape
     text_index = 0
@@ -174,6 +186,7 @@ def embedding_part(quarters, binary_list, img, positions):
                 quarters[i * 4 + j].reshape((x, y, -1))
     return img
 
+#All encryption and embedding operations.
 def embedding_to_img(image_path, info):
     img = imread(image_path)
     height, width, _ = img.shape
@@ -201,6 +214,7 @@ def embedding_to_img(image_path, info):
     print("Embedding Completed!")
     return new_img
 
+#Extract key from image.
 def extract_key(quarters, key_positions):
     key = ""
     for i in key_positions:
@@ -208,6 +222,7 @@ def extract_key(quarters, key_positions):
         decoded_text = convert_binary_to_text(binary_text)
         key += decoded_text.split('=', 1)[0]
     return key
+
 
 def extract_name_surname(binary_text):
     decoded_text = convert_binary_to_text(binary_text)
@@ -218,6 +233,7 @@ def extract_tcno(binary_text):
     decoded_text = convert_binary_to_text(binary_text[0:800])
     return decoded_text
 
+#Saving decrypted information as a dictionary format.
 def save_as_dictionary(info_list):
     info = {"name": "", "surname": "", "tcno": ""}
     for i, key in zip(info_list,info):
@@ -225,7 +241,7 @@ def save_as_dictionary(info_list):
         print(key.capitalize() + ": " + info[key])
     return info
 
-
+#Extraction and Decryption operations.
 def extracting_embedded_data(image_path):
     img = imread(image_path)
     height, width, _ = img.shape
@@ -251,6 +267,7 @@ def extracting_embedded_data(image_path):
         count += 1
     return save_as_dictionary(extracted_info)
 
+#Running encryption and embedding part
 def run_embedding():    
     info_to_hide = {"name": "Alperen", 
                     "surname": "Cavusoglu", 
@@ -260,7 +277,8 @@ def run_embedding():
     output_path = "Extracting_Images/embedded_img.png"
     new_img = embedding_to_img(image_path, info_to_hide)
     imwrite(output_path, new_img)
-
+    
+#Running extractiong and decryption part
 def run_extraction():
     output_path = "Extracting_Images/embedded_img.png"
     extracted_info = extracting_embedded_data(output_path)
