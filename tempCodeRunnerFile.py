@@ -92,7 +92,6 @@ def generate_key():
     fernet_key = Fernet.generate_key()
     aes_key_256_bits = fernet_key[:32]
     return aes_key_256_bits
-
 def key_position_on_img(quarter):
     key_positions = []
     index = 0
@@ -148,7 +147,7 @@ def divide_key_to_parts(encryption_key):
     part_length = ceil(len(encryption_key) / parts_number)
     parts = [encryption_key[i:i+part_length] for i in range(0, len(encryption_key), part_length)]
 
-    divided_parts = [part + "=" for part in parts]
+    divided_parts = [part + "=" for part in parts[:-1]] + [parts[-1]]
     return divided_parts
 
 def embedding_part(quarters, binary_list, img, positions):
@@ -227,7 +226,7 @@ def save_as_dictionary(info_list):
 
 
 def extracting_embedded_data(image_path):
-    img = imread(image_path)
+    img = cv2.imread(image_path)
     height, width, _ = img.shape
     quarters = find_quarters(img, height, width)
     key_positions = key_position_on_img(quarters[15])
