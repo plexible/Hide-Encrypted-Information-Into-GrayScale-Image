@@ -1,12 +1,12 @@
 from EmbeddingExtractingPart import embedding_to_img, extracting_embedded_data
 
-from cv2 import imwrite
+from cv2 import imwrite, imread
 import tkinter as tk
 from tkinter import ttk
 from tkinter import filedialog
 from tkinter import messagebox
 from PIL import Image, ImageTk
-from ttkthemes import ThemedStyle  # ttkthemes kütüphanesini yükleyin: pip install ttkthemes
+from ttkthemes import ThemedStyle
 
 class MyApp:
     def __init__(self, root):
@@ -15,9 +15,9 @@ class MyApp:
         self.name = ""
         self.surname = ""
         self.tcno = ""
-        # ThemedStyle ile tema değiştirme
+        # ThemedStyle for changing theme
         self.style = ThemedStyle(self.root)
-        self.style.set_theme("ubuntu")  # Kullanmak istediğiniz temayı seçin
+        self.style.set_theme("ubuntu")  # Theme
 
         # Notebooks
         self.notebook = ttk.Notebook(root, style="TNotebook")
@@ -32,13 +32,13 @@ class MyApp:
         self.notebook.add(self.extracting_frame, text="Extracting")
 
         # Embedding Page Content
-        self.image_label = ttk.Label(self.embedding_frame, text="Resim:")
+        self.image_label = ttk.Label(self.embedding_frame, text="Image:")
         self.image_label.grid(row=3, column=0, padx=10, pady=10)
-        self.browse_button = ttk.Button(self.embedding_frame, text="Resim Seç", command=self.browse_image)
+        self.browse_button = ttk.Button(self.embedding_frame, text="Choose Image", command=self.browse_image)
         self.browse_button.grid(row=3, column=1, padx=10, pady=10)
 
         # Panel for displaying selected image
-        self.image_panel = ttk.LabelFrame(self.embedding_frame, text="Seçilen Resim", width=400, height=400)
+        self.image_panel = ttk.LabelFrame(self.embedding_frame, text="Chosen Image", width=400, height=400)
         self.image_panel.grid(row=4, column=1, pady=20, padx=10, rowspan=2)
 
         # Information Frame
@@ -67,15 +67,15 @@ class MyApp:
         # Embedding Button
         self.embedding_button = ttk.Button(self.embedding_frame, text="Embedding", command=self.perform_embedding)
         self.embedding_button.grid(row=6, column=0, columnspan=2, pady=10)
-
+        
         # Extracting Page Content
-        self.extracting_image_label = ttk.Label(self.extracting_frame, text="Resim:")
+        self.extracting_image_label = ttk.Label(self.extracting_frame, text="Image:")
         self.extracting_image_label.grid(row=0, column=0, padx=10, pady=10)
-        self.extracting_browse_button = ttk.Button(self.extracting_frame, text="Resim Seç", command=self.browse_extracting_image)
+        self.extracting_browse_button = ttk.Button(self.extracting_frame, text="Choose Image", command=self.browse_extracting_image)
         self.extracting_browse_button.grid(row=0, column=1, padx=10, pady=10)
 
         # Panel for displaying selected image in extracting frame
-        self.extracting_image_panel = ttk.LabelFrame(self.extracting_frame, text="Seçilen Resim", width=400, height=400)
+        self.extracting_image_panel = ttk.LabelFrame(self.extracting_frame, text="Chosen Image", width=400, height=400)
         self.extracting_image_panel.grid(row=1, column=1, pady=20, padx=10, rowspan=2)
 
         # Extracting Information Frame
@@ -102,7 +102,7 @@ class MyApp:
         file_path = filedialog.askopenfilename(filetypes=[("Image files", "*.png;*.jpg;*.jpeg")])
         self.image_path = file_path
         image = Image.open(file_path)
-        image.thumbnail((400, 400))  # Resmi küçült
+        image.thumbnail((400, 400))  
         photo = ImageTk.PhotoImage(image)
 
         self.display_image(photo, self.image_panel)
@@ -112,7 +112,7 @@ class MyApp:
         self.extraction_file_path = file_path
         print(self.extraction_file_path)
         image = Image.open(file_path)
-        image.thumbnail((400, 400))  # Resmi küçült
+        image.thumbnail((400, 400)) 
         photo = ImageTk.PhotoImage(image)
 
         self.display_image(photo, self.extracting_image_panel)
@@ -122,13 +122,19 @@ class MyApp:
                 "tcno": self.information_tcno_entry.get()}
         
         new_img = embedding_to_img(self.image_path, info)
-        messagebox.showinfo("Embedding", "İşlem başarıyla gerçekleştirildi. Resim başarıyla gömüldü.")
-            # Dosya kaydetme penceresini aç
-        file_path = filedialog.asksaveasfilename(defaultextension=".png", filetypes=[("PNG files", "*.png"), ("All files", "*.*")])
+
+        self.new_image_panel = ttk.LabelFrame(self.embedding_frame, text="Embedded Image", width=400, height=400)
+        self.new_image_panel.grid(row=4, column=2, pady=20, padx=10, rowspan=2)
+
+        image = Image.fromarray(new_img)
+        image.thumbnail((400, 400)) 
+        photo = ImageTk.PhotoImage(image)
+        self.display_image(photo, self.new_image_panel)
+        messagebox.showinfo("Embedding", "The operation has been completed successfully.")
         
+        file_path = filedialog.asksaveasfilename(defaultextension=".png", filetypes=[("PNG files", "*.png"), ("All files", "*.*")])
         if not file_path:
             return
-        # Resmi kaydet
         imwrite(file_path, new_img)
         print(f"Resim başarıyla kaydedildi: {file_path}")
         messagebox.showinfo("Embedding", "The operation has been completed successfully.")
@@ -149,7 +155,7 @@ class MyApp:
     def display_image(self, photo, panel):
         label = ttk.Label(panel, image=photo)
         label.image = photo  
-        label.grid(row=1, column=0, pady=10)
+        label.grid(row=0, column=0, pady=10, padx=10)
 
 if __name__ == "__main__":
     root = tk.Tk()
