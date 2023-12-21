@@ -17,10 +17,10 @@ This project aims to explore security mechanisms, focusing on data transfer encr
 - Python 3.11.7
 
 ### Required Python Libraries
+- cffi: 1.16.0
 - cryptography: 41.0.7
 - numpy: 1.26.2
 - opencv-python: 4.8.1.78
 - Pillow: 10.1.0
-- pip: 23.3.2
 - pycparser: 2.21
 - ttkthemes: 3.2.2
