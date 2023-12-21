@@ -288,7 +288,8 @@ def run_extraction():
     output_path = "Extracting_Images/embedded_img.png"
     extracted_info = extracting_embedded_data(output_path)
 
-print("Embedding Part")
-run_embedding()
-print("Extractin Part")
-run_extraction()
+#Printing the running functions
+#print("Embedding Part")
+#run_embedding()
+#print("Extractin Part")
+#run_extraction()
