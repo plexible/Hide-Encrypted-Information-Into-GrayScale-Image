@@ -24,4 +24,6 @@ This project aims to explore security mechanisms, focusing on data transfer encr
 - Pillow: 10.1.0
 - pycparser: 2.21
 - ttkthemes: 3.2.2
-- customtkinter 5.2.1
+- customtkinter: 5.2.1
+- darkdetect: 0.8.0
+- packaging: 23.2
