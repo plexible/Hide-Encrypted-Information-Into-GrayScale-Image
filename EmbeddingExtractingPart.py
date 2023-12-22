@@ -12,7 +12,7 @@ def vigenere_encrypt(plaintext, key):
     ciphertext = ''
     key = key.upper()
     key_length = len(key)
-
+    
     for i, char in enumerate(plaintext):
         if char.isalpha():
             key_char = key[i % key_length]

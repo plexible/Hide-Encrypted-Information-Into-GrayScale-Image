@@ -1,163 +1,238 @@
+from customtkinter import *
 from EmbeddingExtractingPart import embedding_to_img, extracting_embedded_data
-
-from cv2 import imwrite, imread
-import tkinter as tk
-from tkinter import ttk
-from tkinter import filedialog
-from tkinter import messagebox
+from cv2 import imwrite
+from tkinter import ttk, filedialog, messagebox
 from PIL import Image, ImageTk
-from ttkthemes import ThemedStyle
+import tkinter as tk
+import string
 
-class MyApp:
-    def __init__(self, root):
-        self.root = root
-        self.root.title("Embedding and Extracting App")
+class MyApp(CTk):
+    def __init__(self):
+        super().__init__()
+        set_appearance_mode("dark")
         self.name = ""
         self.surname = ""
         self.tcno = ""
-        # ThemedStyle for changing theme
-        self.style = ThemedStyle(self.root)
-        self.style.set_theme("ubuntu")  # Theme
+        self.image_path = None
+        self.extraction_file_path = None
+        self.tabview = CTkTabview(master=self)
+        self.tabview.pack(padx=20, pady=20)
 
-        # Notebooks
-        self.notebook = ttk.Notebook(root, style="TNotebook")
-        self.notebook.pack(pady=10, expand=True, fill=tk.BOTH)
+        self.embedding_tab = self.tabview.add("Embedding")
+        self.extracting_tab = self.tabview.add("Extracting")
 
-        # Frames for each page
-        self.embedding_frame = ttk.Frame(self.notebook)
-        self.extracting_frame = ttk.Frame(self.notebook)
+        self.create_embedding_tab()
+        self.create_extracting_tab()
+    
+    def create_embedding_tab(self):
+        self.information_frame = CTkFrame(master=self.embedding_tab, fg_color="#8D6F3A", border_color="#FFCC70", border_width=2)
+        self.image_frame = CTkFrame(master=self.embedding_tab, fg_color="#8D6F3A", border_color="#FFCC70", border_width=2)
 
-        # Add frames to notebook
-        self.notebook.add(self.embedding_frame, text="Embedding")
-        self.notebook.add(self.extracting_frame, text="Extracting")
+        self.information_frame.grid(row=0, column=0, padx=20, pady=20)
+        self.image_frame.grid(row=0, column=1, padx=20, pady=(0,200))
 
-        # Embedding Page Content
-        self.image_label = ttk.Label(self.embedding_frame, text="Image:")
-        self.image_label.grid(row=3, column=0, padx=10, pady=10)
-        self.browse_button = ttk.Button(self.embedding_frame, text="Choose Image", command=self.browse_image)
-        self.browse_button.grid(row=3, column=1, padx=10, pady=10)
+        label = CTkLabel(master=self.information_frame, text="Information")
+        self.name_entry = CTkEntry(master=self.information_frame, placeholder_text="Name")
+        self.surname_entry = CTkEntry(master=self.information_frame, placeholder_text="Surname")
+        self.tcno_entry = CTkEntry(master=self.information_frame, placeholder_text="Tcno")
 
-        # Panel for displaying selected image
-        self.image_panel = ttk.LabelFrame(self.embedding_frame, text="Chosen Image", width=400, height=400)
-        self.image_panel.grid(row=4, column=1, pady=20, padx=10, rowspan=2)
 
-        # Information Frame
-        self.information_frame = ttk.LabelFrame(self.embedding_frame, text="Information")
-        self.information_frame.grid(row=4, column=0, pady=20, padx=10)
+        submit_btn = CTkButton(master=self.information_frame, text="Embedding", command=self.perform_embedding)
 
-        self.information_name_label = ttk.Label(self.information_frame, text="Name:")
-        self.information_name_label.grid(row=0, column=0, padx=10, pady=10)
-        self.information_name_entry = ttk.Entry(self.information_frame)
-        self.information_name_entry.grid(row=0, column=1, padx=10, pady=10)
+        label.pack(anchor="s", expand=True, padx=30, pady=10)
+        self.name_entry.pack(anchor="s", expand=True, padx=30, pady=10)
+        self.surname_entry.pack(anchor="s", expand=True, padx=30, pady=10)
+        self.tcno_entry.pack(anchor="s", expand=True, padx=30, pady=10)
+        submit_btn.pack(anchor="n", expand=True, padx=30, pady=20)
 
-        self.information_surname_label = ttk.Label(self.information_frame, text="Surname:")
-        self.information_surname_label.grid(row=1, column=0, padx=10, pady=10)
-        self.information_surname_entry = ttk.Entry(self.information_frame)
-        self.information_surname_entry.grid(row=1, column=1, padx=10, pady=10)
+        refresh_button = CTkButton(master=self.embedding_tab, text="Refresh", command=self.perform_embedding_refresh)
+        refresh_button.grid(row=0, column=0, padx=20, pady=(320,0))
 
-        self.information_tcno_label = ttk.Label(self.information_frame, text="TC No:")
-        self.information_tcno_label.grid(row=2, column=0, padx=10, pady=10)
-        self.information_tcno_entry = ttk.Entry(self.information_frame)
-        self.information_tcno_entry.grid(row=2, column=1, padx=10, pady=10)
+        browse_button = CTkButton(self.image_frame, text="Choose Image", command=self.browse_image)
+        browse_button.grid(row=0, column=0, pady=10)
 
-        # Image Path Label
-        self.image_path_label = ttk.Label(self.image_panel, text="")
-        self.image_path_label.grid(row=0, column=0, pady=10)
-
-        # Embedding Button
-        self.embedding_button = ttk.Button(self.embedding_frame, text="Embedding", command=self.perform_embedding)
-        self.embedding_button.grid(row=6, column=0, columnspan=2, pady=10)
+    def create_extracting_tab(self):
+        self.extracted_information_frame = CTkFrame(master=self.extracting_tab, fg_color="#8D6F3A", border_color="#FFCC70", border_width=2)
+        self.extracting_image_frame = CTkFrame(master=self.extracting_tab, fg_color="#8D6F3A", border_color="#FFCC70", border_width=2)
         
-        # Extracting Page Content
-        self.extracting_image_label = ttk.Label(self.extracting_frame, text="Image:")
-        self.extracting_image_label.grid(row=0, column=0, padx=10, pady=10)
-        self.extracting_browse_button = ttk.Button(self.extracting_frame, text="Choose Image", command=self.browse_extracting_image)
-        self.extracting_browse_button.grid(row=0, column=1, padx=10, pady=10)
+        self.extracted_information_frame.grid(row=0, column=1, padx=20, pady=20)
+        self.extracting_image_frame.grid(row=0, column=0, padx=20, pady=(0,130))
 
-        # Panel for displaying selected image in extracting frame
-        self.extracting_image_panel = ttk.LabelFrame(self.extracting_frame, text="Chosen Image", width=400, height=400)
-        self.extracting_image_panel.grid(row=1, column=1, pady=20, padx=10, rowspan=2)
 
-        # Extracting Information Frame
-        self.extracting_information_frame = ttk.LabelFrame(self.extracting_frame, text="Extracted Information")
-        self.extracting_information_frame.grid(row=1, column=0, pady=20, padx=10)
+        label = CTkLabel(master=self.extracted_information_frame, text="Extracted Information  ")
+        self.show_name = CTkLabel(master=self.extracted_information_frame, text="Name:  ")
+        if not self.name_entry.get().isascii() or not self.name_entry.get().isascii() :
+            messagebox.showerror("Error", "Please enter English characters only.")
+        self.show_surname = CTkLabel(master=self.extracted_information_frame, text="Surname:  ")
+        self.show_tcno = CTkLabel(master=self.extracted_information_frame, text="Tcno:  ")
+        self.submit_btn = CTkButton(master=self.extracted_information_frame, text="Extracting", command=self.perform_extracting)
 
-        self.extracting_information_name_label = ttk.Label(self.extracting_information_frame, text="Name: ")
-        self.extracting_information_name_label.grid(row=0, column=0, padx=10, pady=10)
-        self.extracting_information_surname_label = ttk.Label(self.extracting_information_frame, text="Surname: ")
-        self.extracting_information_surname_label.grid(row=1, column=0, padx=10, pady=10)
-        self.extracting_information_tcno_label = ttk.Label(self.extracting_information_frame, text="TC No: ")
-        self.extracting_information_tcno_label.grid(row=2, column=0, padx=10, pady=10)
+        label.pack(anchor="s", expand=True, padx=30, pady=10)
+        self.show_name.pack(anchor="s", expand=True, padx=30, pady=10)
+        self.show_surname.pack(anchor="s", expand=True, padx=30, pady=10)
+        self.show_tcno.pack(anchor="s", expand=True, padx=30, pady=10)
+        self.submit_btn.pack(anchor="n", expand=True, padx=30, pady=20)
 
-        # Extracting Image Path Label
-        self.extracting_image_path_label = ttk.Label(self.extracting_image_panel, text="")
-        self.extracting_image_path_label.grid(row=0, column=0, pady=10)
+        refresh_button = CTkButton(master=self.extracting_tab, text="Refresh", command=self.perform_extracting_refresh)
+        refresh_button.grid(row=0, column=1, padx=20, pady=(320,0))
 
-        # Extracting Button
-        self.extracting_button = ttk.Button(self.extracting_frame, text="Extracting", command=self.perform_extracting)
-        self.extracting_button.grid(row=3, column=0, columnspan=2, pady=10)
+        browse_button = CTkButton(self.extracting_image_frame, text="Choose Image", command=self.browse_extracting_image)
+        browse_button.grid(row=0, column=0, pady=10)
 
-        
-    def browse_image(self):
-        file_path = filedialog.askopenfilename(filetypes=[("Image files", "*.png;*.jpg;*.jpeg")])
-        self.image_path = file_path
-        image = Image.open(file_path)
-        image.thumbnail((400, 400))  
-        photo = ImageTk.PhotoImage(image)
 
-        self.display_image(photo, self.image_panel)
+    def perform_extracting_refresh(self):
+        self.extracting_image_frame.destroy()
+        self.extracted_information_frame.destroy()
+        self.extraction_file_path = ""
+        self.create_extracting_tab()
+
+    def perform_embedding_refresh(self):
+        self.image_frame.destroy()
+        self.information_frame.destroy()
+        self.create_embedding_tab()
+
+    def browse_image(self):  
+        try:
+            file_path = filedialog.askopenfilename(filetypes=[("Image files", "*.png;*.jpg;*.jpeg")])
+            if file_path:
+                print("Dosya yolu:", file_path)
+            else:
+                print("Dosya seçilmedi veya işlem iptal edildi.")
+            self.image_path = file_path
+            image = Image.open(file_path)
+            image.thumbnail((400, 400))
+            photo = ImageTk.PhotoImage(image)
+            self.image_frame.grid(row=0, column=1, padx=20, pady=10)
+            self.display_embedding_image(photo, self.image_frame)
+        except Exception as e:
+            messagebox.showerror("Error", "Dosya seçilmedi veya işlem iptal edildi.")
+
 
     def browse_extracting_image(self):
-        file_path = filedialog.askopenfilename(filetypes=[("Image files", "*.png;*.jpg;*.jpeg")])
-        self.extraction_file_path = file_path
-        print(self.extraction_file_path)
-        image = Image.open(file_path)
-        image.thumbnail((400, 400)) 
-        photo = ImageTk.PhotoImage(image)
+        try:
+            file_path = filedialog.askopenfilename(filetypes=[("Image files", "*.png;*.jpg;*.jpeg")])
+            if file_path:
+                print("Dosya yolu:", file_path)
+            else:
+                print("Dosya seçilmedi veya işlem iptal edildi.")
+            self.extraction_file_path = file_path
+            image = Image.open(file_path)
+            image.thumbnail((400, 400)) 
+            photo = ImageTk.PhotoImage(image)
+            self.extracting_image_frame.grid(row=0, column=0, padx=20, pady=10)
+            self.display_extracting_image(photo, self.extracting_image_frame)
+        except Exception as e:
+            messagebox.showerror("Error", "Dosya seçilmedi veya işlem iptal edildi.")
 
-        self.display_image(photo, self.extracting_image_panel)
+    def validate_english_characters(self, new_text):
+        if not all(char in string.ascii_letters for char in new_text):
+            self.error_message = "Error: User English characters are allowed."
+            return False
+        return True
+
+    def validate_tcno(self):
+        if len(self.tcno_entry.get()) != 11 or not self.tcno_entry.get().isdigit():
+            self.error_message = "Error", "Error: TCNO must be an 11-digit number."
+            return False
+        return True 
+        
+    def validations(self):
+        entry_name = self.name_entry.get()
+        entry_surname = self.surname_entry.get()
+        if not entry_name:
+            messagebox.showerror("Error", "Name is required.")
+            return False
+        elif not entry_surname:
+            messagebox.showerror("Error", "Surname is required.")
+            return False
+        elif not self.tcno_entry.get():
+            messagebox.showerror("Error", "Tcno is required.")
+            return False
+        elif (not self.validate_english_characters(entry_name)) or (not self.validate_english_characters(entry_surname)) or (not self.validate_tcno()):
+            messagebox.showerror("Error", self.error_message)
+            return False
+        return True
 
     def perform_embedding(self):
-        info = {"name": self.information_name_entry.get(), "surname": self.information_surname_entry.get(),
-                "tcno": self.information_tcno_entry.get()}
-        
-        new_img = embedding_to_img(self.image_path, info)
-
-        self.new_image_panel = ttk.LabelFrame(self.embedding_frame, text="Embedded Image", width=400, height=400)
-        self.new_image_panel.grid(row=4, column=2, pady=20, padx=10, rowspan=2)
-
-        image = Image.fromarray(new_img)
-        image.thumbnail((400, 400)) 
-        photo = ImageTk.PhotoImage(image)
-        self.display_image(photo, self.new_image_panel)
-        messagebox.showinfo("Embedding", "The operation has been completed successfully.")
-        
-        file_path = filedialog.asksaveasfilename(defaultextension=".png", filetypes=[("PNG files", "*.png"), ("All files", "*.*")])
-        if not file_path:
+        if not self.validations():
             return
-        imwrite(file_path, new_img)
-        print(f"Resim başarıyla kaydedildi: {file_path}")
-        messagebox.showinfo("Embedding", "The operation has been completed successfully.")
+        if not self.image_path:
+            messagebox.showerror("Error", "Choose an image.")
+            return 0
+        else:
+            try:
+                info = {"name": self.name_entry.get(), "surname": self.surname_entry.get(), "tcno": self.tcno_entry.get()}
+                new_img = embedding_to_img(self.image_path, info)
+                
+                self.new_image_frame = CTkFrame(master=self.embedding_tab, fg_color="#8D6F3A", border_color="#FFCC70", border_width=2)
+                self.new_image_frame.grid(row=0, column=2, padx=20)
+                new_image_label = CTkLabel(master=self.new_image_frame, text="Embedded Image")
+                new_image_label.grid(row=0, column=0, pady=10, padx=10)
+
+                img = Image.fromarray(new_img)
+                img.thumbnail((400, 400))
+                photo = ImageTk.PhotoImage(img)
+                self.display_embedded_image(photo, self.new_image_frame)
+
+                messagebox.showinfo("Embedding", "The operation has been completed successfully.")
+
+                file_path = filedialog.asksaveasfilename(defaultextension=".png", filetypes=[("PNG files", "*.png"), ("All files", "*.*")])
+                if file_path:
+                    imwrite(file_path, new_img)
+                    print(f"Resim başarıyla kaydedildi: {file_path}")
+                    messagebox.showinfo("Embedding", "The operation has been completed successfully.")
+            except Exception as e:
+                self.perform_embedding_refresh()
+                messagebox.showerror("Error", f"Embedding operation is failed!")
 
     def perform_extracting(self):
-        info = extracting_embedded_data(self.extraction_file_path)
-        self.name = info['name']
-        self.surname = info['surname']
-        self.tcno = info['tcno']
-        self.extracting_information_name_label = ttk.Label(self.extracting_information_frame, text="Name: "+self.name)
-        self.extracting_information_name_label.grid(row=0, column=0, padx=10, pady=10)
-        self.extracting_information_surname_label = ttk.Label(self.extracting_information_frame, text="Surname: "+self.surname)
-        self.extracting_information_surname_label.grid(row=1, column=0, padx=10, pady=10)
-        self.extracting_information_tcno_label = ttk.Label(self.extracting_information_frame, text="TC No: "+self.tcno)
-        self.extracting_information_tcno_label.grid(row=2, column=0, padx=10, pady=10)
-        messagebox.showinfo("Extracting", "The operation has been completed successfully.")
+        if not self.extraction_file_path:
+            messagebox.showerror("Error", "Choose an image.")
+        else:
+            try:
+                info = extracting_embedded_data(self.extraction_file_path)
+                self.name = info['name']
+                self.surname = info['surname']
+                self.tcno = info['tcno']
+                self.show_name.destroy()
+                self.show_surname.destroy()
+                self.show_tcno.destroy()
+                self.submit_btn.destroy()
+                self.show_name = CTkLabel(master=self.extracted_information_frame, text="Name:  " + self.name) 
+                self.show_surname = CTkLabel(master=self.extracted_information_frame, text="Surname:  " + self.surname) 
+                self.show_tcno = CTkLabel(master=self.extracted_information_frame, text="Tcno:  " + self.tcno)
+                self.submit_btn = CTkButton(master=self.extracted_information_frame, text="Extracting", command=self.perform_extracting)
+                self.show_name.pack(anchor="s", expand=True, padx=30, pady=10)
+                self.show_surname.pack(anchor="s", expand=True, padx=30, pady=10)
+                self.show_tcno.pack(anchor="s", expand=True, padx=30, pady=10)
+                self.submit_btn.pack(anchor="n", expand=True, padx=30, pady=20)
+                messagebox.showinfo("Extracting", "The operation has been completed successfully.")
+            except Exception as e:
+                self.perform_extracting_refresh()
+                messagebox.showerror("Error", f"Information could not be extracted from the image")
 
-    def display_image(self, photo, panel):
-        label = ttk.Label(panel, image=photo)
-        label.image = photo  
-        label.grid(row=0, column=0, pady=10, padx=10)
+    def display_embedding_image(self, photo, frame):
+        if hasattr(self, "embedding_label"):
+            self.embedding_label.destroy()
+        self.embedding_label = CTkLabel(frame, image=photo, text="")
+        self.embedding_label.image = photo
+        self.embedding_label.grid(row=1, column=0, pady=10, padx=10)
+
+    def display_extracting_image(self, photo, frame):
+        if hasattr(self, "extracting_label"):
+            self.extracting_label.destroy()
+        self.extracting_label = CTkLabel(frame, image=photo, text="")
+        self.extracting_label.image = photo
+        self.extracting_label.grid(row=1, column=0, pady=10, padx=10)
+
+    def display_embedded_image(self, photo, frame):
+        if hasattr(self, "embedded_label"):
+            self.embedded_label.destroy()
+        self.embedded_label = CTkLabel(frame, image=photo, text="")
+        self.embedded_label.image = photo
+        self.embedded_label.grid(row=1, column=0, pady=10, padx=10)
+        
 
 if __name__ == "__main__":
-    root = tk.Tk()
-    app = MyApp(root)
-    root.mainloop()
+    app = MyApp()
+    app.mainloop()
