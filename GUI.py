@@ -6,6 +6,7 @@ from PIL import Image, ImageTk
 import tkinter as tk
 import string
 import warnings
+import easygui
 warnings.simplefilter("ignore")
 
 class MyApp(CTk):
@@ -95,14 +96,14 @@ class MyApp(CTk):
     def perform_embedding_refresh(self):
         self.image_frame.destroy()
         self.information_frame.destroy()
-        if hasattr(self, "new_image_Frame"):
-            getattr(self, "new_image_Frame").destroy()
+        if hasattr(self, "new_image_frame"):
+            getattr(self, "new_image_frame").destroy()
         self.image_path = ""
         self.create_embedding_tab()
 
     def browse_image(self):  
         try:
-            file_path = filedialog.askopenfilename(filetypes=[("Image files", "*.png;*.jpg;*.jpeg")])
+            file_path = easygui.fileopenbox(default="*.png;*.jpg;*.jpeg", filetypes=["*.png", "*.jpg", "*.jpeg"])
             if file_path:
                 self.image_path = file_path
             else:
@@ -118,7 +119,7 @@ class MyApp(CTk):
 
     def browse_extracting_image(self):
         try:
-            file_path = filedialog.askopenfilename(filetypes=[("Image files", "*.png;*.jpg;*.jpeg")])
+            file_path = easygui.fileopenbox(default="*.png;*.jpg;*.jpeg", filetypes=["*.png", "*.jpg", "*.jpeg"])
             if file_path:
                 self.extraction_file_path = file_path
             else:
@@ -132,7 +133,7 @@ class MyApp(CTk):
             messagebox.showerror("Error", "The file was not selected or the operation was cancelled.")
 
     def validate_english_characters(self, new_text):
-        if not all(char in string.ascii_letters for char in new_text):
+        if not all(char in string.ascii_letters + " " for char in new_text):
             self.error_message = "Error: User English characters are allowed."
             return False
         return True
@@ -225,7 +226,4 @@ class MyApp(CTk):
 
 if __name__ == "__main__":
     app = MyApp()
-    app.mainloop()
-
-
-
+    app.mainloop()    

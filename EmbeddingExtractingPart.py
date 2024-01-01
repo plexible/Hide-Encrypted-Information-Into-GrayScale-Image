@@ -279,17 +279,24 @@ def run_embedding():
                     "tcno": "123456789123"}
     
     image_path = "Embedding_Images/1.jpg"
-    output_path = "Extracting_Images/embedded_img.png"
+    output_path = "Embedded_Images/embedded_img.png"
     new_img = embedding_to_img(image_path, info_to_hide)
     imwrite(output_path, new_img)
     
 #Running extractiong and decryption part
 def run_extraction():
-    output_path = "Extracting_Images/embedded_img.png"
+    output_path = "Embedded_Images/embedded_img.png"
     extracted_info = extracting_embedded_data(output_path)
 
 #Printing the running functions
-#print("Embedding Part")
-#run_embedding()
-#print("Extractin Part")
-#run_extraction()
+print("Embedding Part")
+run_embedding()
+print("Extractin Part")
+run_extraction()
+    
+sum = 0
+
+value = 4234
+while not (len(set(str(value))) == len(str(value))): #For the numbers to be different from each other.
+    value += 1
+print(value)
