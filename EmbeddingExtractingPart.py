@@ -293,10 +293,3 @@ print("Embedding Part")
 run_embedding()
 print("Extractin Part")
 run_extraction()
-    
-sum = 0
-
-value = 4234
-while not (len(set(str(value))) == len(str(value))): #For the numbers to be different from each other.
-    value += 1
-print(value)
