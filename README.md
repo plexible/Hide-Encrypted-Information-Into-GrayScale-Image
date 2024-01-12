@@ -1,3 +1,12 @@
+<style>
+  .image-container {
+    display: flex;
+    flex-direction: row;
+  }
+  .image-container img {
+    margin-right: 10px; /* İstenilen boşluk miktarını ayarlayabilirsiniz */
+  }
+</style>
 # A secure system by combining encryption for data transfer and information hiding techniques for data authentication.
 
 # Secure Data Transfer and Information Hiding Project
