@@ -13,6 +13,7 @@ class MyApp(CTk):
     def __init__(self):
         super().__init__()
         set_appearance_mode("dark")
+        self.title("Embedding-Extracting")
         self.name = ""
         self.surname = ""
         self.tcno = ""
@@ -222,7 +223,6 @@ class MyApp(CTk):
 
         setattr(self, label_name, new_label)
 
-        
 
 if __name__ == "__main__":
     app = MyApp()
