@@ -29,7 +29,7 @@ This project aims to explore security mechanisms, focusing on data transfer encr
 
 #### After Clicking the embedding button
 <div style="display: flex; flex-direction: row;">
-  <img src="./GUI_Images/After_Embedding_Button.PNG" alt="After Clicking the embedding button" width="400" />
+  <img src="./GUI_Images/After_Embbeding_Button.PNG" alt="After Clicking the embedding button" width="400" />
 </div>
 
 ## GUI Extracting
