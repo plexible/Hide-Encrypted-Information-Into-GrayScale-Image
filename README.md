@@ -24,7 +24,7 @@ This project aims to explore security mechanisms, focusing on data transfer encr
 ![Resim 2](./GUI_Images/Before_Embedding_Button.PNG)
 
 ### After Clicking the embedding button
-![Resim 3](./GUI_Images/After_Embedding_Button.PNG)
+![Resim 3](./GUI_Images/After_Embbeding_Button.PNG)
 
 ## GUI Extracting
 
