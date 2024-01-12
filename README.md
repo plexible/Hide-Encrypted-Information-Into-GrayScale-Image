@@ -16,18 +16,18 @@ This project aims to explore security mechanisms, focusing on data transfer encr
 ## Prerequisites
 - Python 3.12.0
 ### GUI Embedding
-Main Embedding Page
+- Main Embedding Page
 ![Resim 1](./GUI_Images/Embedding.png)
-Before clicking the embedding button
+- Before clicking the embedding button
 ![Resim 2](./GUI_Images/Before_Embedding_Button.PNG)
-After Clicking the embedding button
+- After Clicking the embedding button
 ![Resim 3](./GUI_Images/After_Embbeding_Button.PNG)
 ### GUI Extracting
-Main Extracting Page
+- Main Extracting Page
 ![Resim 1](./GUI_Images/Extracting.PNG)
-Before clicking the embedding button
+- Before clicking the embedding button
 ![Resim 2](./GUI_Images/Before_Extracting_Button.PNG)
-After Clicking the embedding button
+- After Clicking the embedding button
 ![Resim 3](./GUI_Images/After_Extracting_Button.PNG)
 ### Required Python Libraries
 - cffi: 1.16.0
