@@ -289,7 +289,7 @@ def run_extraction():
     extracted_info = extracting_embedded_data(output_path)
 
 #Printing the running functions
-print("Embedding Part")
-run_embedding()
-print("Extractin Part")
-run_extraction()
+#print("Embedding Part")
+#run_embedding()
+#print("Extractin Part")
+#run_extraction()
