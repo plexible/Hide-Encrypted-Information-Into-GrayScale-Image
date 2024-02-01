@@ -15,20 +15,40 @@ This project aims to explore security mechanisms, focusing on data transfer encr
 ## Getting Started
 ## Prerequisites
 - Python 3.12.0
-### GUI Embedding
-Main Embedding Page
-![Resim 1](./GUI_Images/Embedding.png)
-Before clicking the embedding button
-![Resim 2](./GUI_Images/Before_Embedding_Button.PNG)
-After Clicking the embedding button
-![Resim 3](./GUI_Images/After_Embbeding_Button.PNG)
-### GUI Extracting
-Main Extracting Page
-![Resim 1](./GUI_Images/Extracting.PNG)
-Before clicking the embedding button
-![Resim 2](./GUI_Images/Before_Extracting_Button.PNG)
-After Clicking the embedding button
-![Resim 3](./GUI_Images/After_Extracting_Button.PNG)
+## GUI Embedding
+
+### Main Embedding Page
+<div style="display: flex; flex-direction: row;">
+  <img src="./GUI_Images/Embedding.png" alt="Main Embedding Page" width="400" />
+</div>
+
+#### Before clicking the embedding button
+<div style="display: flex; flex-direction: row;">
+  <img src="./GUI_Images/Before_Embedding_Button.PNG" alt="Before clicking the embedding button" width="400" />
+</div>
+
+#### After Clicking the embedding button
+<div style="display: flex; flex-direction: row;">
+  <img src="./GUI_Images/After_Embbeding_Button.PNG" alt="After Clicking the embedding button" width="400" />
+</div>
+
+## GUI Extracting
+
+### Main Extracting Page
+<div style="display: flex; flex-direction: row;">
+  <img src="./GUI_Images/Extracting.PNG" alt="Main Extracting Page" width="400" />
+</div>
+
+#### Before clicking the extracting button
+<div style="display: flex; flex-direction: row;">
+  <img src="./GUI_Images/Before_Extracting_Button.PNG" alt="Before clicking the extracting button" width="400" />
+</div>
+
+#### After Clicking the extracting button
+<div style="display: flex; flex-direction: row;">
+  <img src="./GUI_Images/After_Extracting_Button.PNG" alt="After Clicking the extracting button" width="400" />
+</div>
+
 ### Required Python Libraries
 - cffi: 1.16.0
 - cryptography: 41.0.7
